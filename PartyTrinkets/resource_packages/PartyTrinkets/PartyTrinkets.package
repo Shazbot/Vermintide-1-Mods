@@ -1,0 +1,11 @@
+mod = [
+	"PartyTrinkets"
+]
+
+package = [
+	"resource_packages/PartyTrinkets/PartyTrinkets"
+]
+
+lua = [
+	"scripts/mods/PartyTrinkets/*"
+]

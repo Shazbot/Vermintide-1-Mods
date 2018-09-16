@@ -1,0 +1,11 @@
+mod = [
+	"CustomHUD"
+]
+
+package = [
+	"resource_packages/CustomHUD/CustomHUD"
+]
+
+lua = [
+	"scripts/mods/CustomHUD/*"
+]

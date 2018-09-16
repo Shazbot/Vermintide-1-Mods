@@ -1,0 +1,11 @@
+mod = [
+	"WeaponSwitching"
+]
+
+package = [
+	"resource_packages/WeaponSwitching/WeaponSwitching"
+]
+
+lua = [
+	"scripts/mods/WeaponSwitching/*"
+]

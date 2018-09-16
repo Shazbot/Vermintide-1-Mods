@@ -1,0 +1,11 @@
+mod = [
+	"InventoryFiltering"
+]
+
+package = [
+	"resource_packages/InventoryFiltering/InventoryFiltering"
+]
+
+lua = [
+	"scripts/mods/InventoryFiltering/*"
+]

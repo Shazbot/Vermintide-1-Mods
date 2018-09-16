@@ -1,0 +1,11 @@
+mod = [
+	"HideHPProcs"
+]
+
+package = [
+	"resource_packages/HideHPProcs/HideHPProcs"
+]
+
+lua = [
+	"scripts/mods/HideHPProcs/*"
+]

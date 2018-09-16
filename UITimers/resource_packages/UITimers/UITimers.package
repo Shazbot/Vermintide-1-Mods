@@ -1,0 +1,11 @@
+mod = [
+	"UITimers"
+]
+
+package = [
+	"resource_packages/UITimers/UITimers"
+]
+
+lua = [
+	"scripts/mods/UITimers/*"
+]
