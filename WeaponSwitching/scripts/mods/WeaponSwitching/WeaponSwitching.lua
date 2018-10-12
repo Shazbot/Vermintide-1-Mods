@@ -36,7 +36,7 @@ local weapon_action_interrupt_damage_types = {
 	cutting = true
 }
 local interupting_action_data = {}
-mod:hook("CharacterStateHelper.update_weapon_actions", function(func, t, unit, input_extension, inventory_extension, damage_extension)
+mod:hook_origin(CharacterStateHelper, "update_weapon_actions", function(t, unit, input_extension, inventory_extension, damage_extension)
 	Profiler.start("weapon_action")
 
 	local item_data, right_hand_weapon_extension, left_hand_weapon_extension = CharacterStateHelper._get_item_data_and_weapon_extensions(inventory_extension)
@@ -230,7 +230,7 @@ mod:hook("CharacterStateHelper.update_weapon_actions", function(func, t, unit, i
 end)
 
 local empty_table = {}
-mod:hook("CharacterStateHelper._get_chain_action_data", function(func, item_template, current_action_extension, current_action_settings, input_extension, inventory_extension, unit, t, is_bot_player)
+mod:hook_origin(CharacterStateHelper, "_get_chain_action_data", function(item_template, current_action_extension, current_action_settings, input_extension, inventory_extension, unit, t, is_bot_player)
 	local chain_actions = current_action_settings.allowed_chain_actions or empty_table
 	local new_action, new_sub_action, wield_input, send_buffer, clear_buffer = nil
 
@@ -391,18 +391,3 @@ mod:hook("CharacterStateHelper._get_chain_action_data", function(func, item_temp
 
 	return new_action, new_sub_action, wield_input
 end)
-
---- Events. ---
---- Settings changes.
-mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
-end
-
---- Mod suspend.
-mod.on_disabled = function(initial_call) -- luacheck: ignore initial_call
-    mod:disable_all_hooks()
-end
-
---- Mod unsuspend.
-mod.on_enabled = function(initial_call) -- luacheck: ignore initial_call
-	mod:enable_all_hooks()
-end
