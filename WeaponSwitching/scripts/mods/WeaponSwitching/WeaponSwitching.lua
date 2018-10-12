@@ -391,18 +391,3 @@ mod:hook(CharacterStateHelper, "_get_chain_action_data", function(func, item_tem
 
 	return new_action, new_sub_action, wield_input
 end)
-
---- Events. ---
---- Settings changes.
-mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
-end
-
---- Mod suspend.
-mod.on_disabled = function(initial_call) -- luacheck: ignore initial_call
-    mod:disable_all_hooks()
-end
-
---- Mod unsuspend.
-mod.on_enabled = function(initial_call) -- luacheck: ignore initial_call
-	mod:enable_all_hooks()
-end
