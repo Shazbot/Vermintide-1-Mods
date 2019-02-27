@@ -9,12 +9,34 @@ mod.favs = {}
 mod.FAVORITES_SETTINGS_KEY = "favorite_items"
 mod.hotkey = "r"
 
-mod.serialize_favs = function(self)
-	mod:set(mod.FAVORITES_SETTINGS_KEY, self.favs)
+local function save_favs()
+	local favs_array = {}
+	for backend_id in pairs(mod.favs) do
+		table.insert(favs_array, backend_id)
+	end
+	mod:set(mod.FAVORITES_SETTINGS_KEY, favs_array)
 end
 
-mod.deserialize_favs = function(self)
-	self.favs = table.clone(mod:get(mod.FAVORITES_SETTINGS_KEY) or {})
+local function load_favs()
+	local favs_map = {}
+	local favs_array = mod:get(mod.FAVORITES_SETTINGS_KEY) or {}
+	for _, backend_id in ipairs(favs_array) do
+		favs_map[backend_id] = true
+	end
+	mod.favs = favs_map
+end
+
+local function is_favorite(backend_id)
+	return mod.favs[backend_id]
+end
+
+local function toggle_favorite(backend_id)
+	if mod.favs[backend_id] then
+		mod.favs[backend_id] = nil
+	else
+		mod.favs[backend_id] = true
+	end
+	save_favs()
 end
 
 local filter_operators = {
@@ -90,12 +112,8 @@ local filter_operators = {
 	}
 }
 
-local is_favorite = function (backend_id)
-	return table.contains(mod.favs, backend_id)
-end
-
 local filter_macros = {
-	trait_names =  function (item_data, backend_id)
+	trait_names = function (item_data, backend_id)
 		local trait_names = ""
 		if item_data.traits then
 			for _, trait_name in ipairs(item_data.traits) do
@@ -117,7 +135,7 @@ local filter_macros = {
 		return Localize(item_data.display_name).." "..Localize(item_data.item_type).." "..trait_names
 	end,
 	is_fav = function (item_data, backend_id)
-		return is_favorite(backend_id)
+		return is_favorite(backend_id) == true
 	end,
 	are_traits_locked = function (item_data, backend_id)
 		local slot_type = item_data.slot_type
@@ -269,11 +287,11 @@ local function UI_update_hook(func, self, ...)
 	return func(self, ...)
 end
 
-mod:hook(InventoryItemsUI, "update" UI_update_hook)
-mod:hook(AltarItemsUI, "update" UI_update_hook)
-mod:hook(ForgeItemsUI, "update" UI_update_hook)
+mod:hook(InventoryItemsUI, "update", UI_update_hook)
+mod:hook(AltarItemsUI, "update", UI_update_hook)
+mod:hook(ForgeItemsUI, "update", UI_update_hook)
 
-mod:hook(BackendUtils, "get_inventory_items" function(func, profile, slot, rarity)
+mod:hook_origin(BackendUtils, "get_inventory_items", function(profile, slot, rarity)
 	local item_id_list = ScriptBackendItem.get_items(profile, slot, rarity)
 	local items = {}
 	local unfiltered_items = {}
@@ -298,7 +316,7 @@ mod:hook(BackendUtils, "get_inventory_items" function(func, profile, slot, rarit
 	return items
 end)
 
-mod:hook(ScriptBackendCommon, "filter_items" function(func, items, filter_infix)
+mod:hook_origin(ScriptBackendCommon, "filter_items", function(items, filter_infix)
 	local input_filter_present = not not filter_infix
 
 	if not input_filter_present and mod:get_filter() then
@@ -365,29 +383,6 @@ mod:hook(ScriptBackendCommon, "filter_items" function(func, items, filter_infix)
 	return passed
 end)
 
-function remove_from_favorites(backend_id)
-	if table.contains(mod.favs, backend_id) then
-		local new_my_favs = {}
-		for _,v in ipairs(mod.favs) do
-			if v ~= backend_id then
-				new_my_favs[#new_my_favs + 1] = v
-			end
-		end
-
-		mod.favs = new_my_favs
-	end
-end
-
-function toggle_favorite(backend_id)
-	if table.contains(mod.favs, backend_id) then
-		remove_from_favorites(backend_id)
-		mod:serialize_favs()
-		return
-	end
-
-	mod.favs[#mod.favs + 1] = backend_id
-	mod:serialize_favs()
-end
 
 mod.is_favorites_filter_active = function(self)
 	return table.contains(self.filters, "favs")
@@ -415,13 +410,13 @@ local element_settings = {
 }
 
 favorite_keymaps = {
-    win32 = {
-	    fav = {
-		    "keyboard",
-		    mod.hotkey,
-		    "pressed"
-	    },
-    }
+		win32 = {
+			fav = {
+				"keyboard",
+				mod.hotkey,
+				"pressed"
+			},
+		}
 }
 favorite_keymaps.xb1 = favorite_keymaps.win32
 
@@ -446,7 +441,7 @@ local fav_item_text_style = {
 		6
 	}
 }
-mod:hook(InventoryItemsList, "draw" function(func, self, ...)
+mod:hook(InventoryItemsList, "draw", function(func, self, ...)
 	for _,v in ipairs(self.item_widget_elements) do
 		if not v.style.text_favorite then
 			v.style.text_favorite = table.clone(fav_item_text_style)
@@ -473,10 +468,12 @@ mod:hook(InventoryItemsList, "draw" function(func, self, ...)
 			pass_type = "text",
 			style_id = "text_favorite",
 			content_check_function = function(ui_content)
-				if not ui_content.item then
-					return false
+				if ui_content.item then
+					local mod = get_mod("InventoryFiltering")
+					if mod then
+						return mod.favs[ui_content.item.backend_id]
+					end
 				end
-				return table.contains(mod.favs, ui_content.item.backend_id)
 			end,
 		}
 
@@ -488,9 +485,7 @@ mod:hook(InventoryItemsList, "draw" function(func, self, ...)
 end)
 
 local open_chat = nil
-mod:hook(InventoryItemsList, "update" function(func, self, ...)
-	func(self, ...)
-
+mod:hook_safe(InventoryItemsList, "update", function(self)
 	if open_chat and Managers.state.network:network_time() > open_chat then
 		local tab_widget = Managers.chat.chat_gui.tab_widget
 		local tab_hotspot = tab_widget.content.button_hotspot
@@ -696,8 +691,7 @@ local function set_item_element_info(item_element, is_room_item, item, item_colo
 	return
 end
 
-mod:hook(InventoryItemsList, "populate_widget_list" function(func, self, list_start_index, sort_list)
-
+mod:hook_origin(InventoryItemsList, "populate_widget_list", function(self, list_start_index, sort_list)
 	self.hover_list_index = nil -- ADDITION
 
 	local items = self.stored_items
@@ -789,7 +783,7 @@ mod:hook(InventoryItemsList, "populate_widget_list" function(func, self, list_st
 
 				local content = item_element.content
 
-				content.text_favorite = "FAV" -- ADDITION
+				content.text_favorite = mod:localize("fav") -- ADDITION
 
 				local style = item_element.style
 				list_content[index] = content
@@ -816,7 +810,7 @@ mod:hook(InventoryItemsList, "populate_widget_list" function(func, self, list_st
 				for i = 1, padding_n, 1 do
 					local empty_element = self.empty_widget_elements[i]
 					local index = #list_content + 1
-					empty_element.content.text_favorite = "FAV" -- ADDITION
+					empty_element.content.text_favorite = mod:localize("fav") -- ADDITION
 					list_content[index] = empty_element.content
 					list_style.item_styles[index] = empty_element.style
 				end
@@ -835,7 +829,7 @@ mod:hook(InventoryItemsList, "populate_widget_list" function(func, self, list_st
 	return
 end)
 
-mod:hook(ForgeView, "_apply_item_filter" function(func, self, item_filter, update_list)
+mod:hook_origin(ForgeView, "_apply_item_filter", function(self, item_filter, update_list)
 	local ui_pages = self.ui_pages
 	local items_page = ui_pages.items
 	self.item_filter = item_filter
@@ -860,7 +854,7 @@ mod:hook(ForgeView, "_apply_item_filter" function(func, self, item_filter, updat
 	end
 end)
 
-mod:hook(ForgeLogic, "poll_select_rerolled_traits" function (func, self)
+mod:hook_origin(ForgeLogic, "poll_select_rerolled_traits", function (self)
 	local data = self._reroll_trait_data
 
 	fassert(data, "Polling for select reroll traits when there is nothing to ask about")
@@ -916,8 +910,8 @@ local function forge_and_altar_selection_bar_index_changed_hook(func, ...)
 	return func(...)
 end
 
-mod:hook(ForgeView, "on_forge_selection_bar_index_changed" forge_and_altar_selection_bar_index_changed_hook)
-mod:hook(AltarView, "on_forge_selection_bar_index_changed" forge_and_altar_selection_bar_index_changed_hook)
+mod:hook(ForgeView, "on_forge_selection_bar_index_changed", forge_and_altar_selection_bar_index_changed_hook)
+mod:hook(AltarView, "on_forge_selection_bar_index_changed", forge_and_altar_selection_bar_index_changed_hook)
 
 local any_screen_open = false
 
@@ -929,36 +923,30 @@ local function forge_and_altar_on_enter_hook(func, ...)
 	return func(...)
 end
 
-mod:hook(ForgeView, "on_enter" forge_and_altar_on_enter_hook)
-mod:hook(AltarView, "on_enter" forge_and_altar_on_enter_hook)
+mod:hook(ForgeView, "on_enter", forge_and_altar_on_enter_hook)
+mod:hook(AltarView, "on_enter", forge_and_altar_on_enter_hook)
 
-local function forge_and_altar_on_exit_hook(func, ...)
-	func(...)
+local function forge_and_altar_on_exit_hook()
 	any_screen_open = false
 	mod:destroy_window()
 end
 
-mod:hook(ForgeView, "on_exit" forge_and_altar_on_exit_hook)
-mod:hook(AltarView, "on_exit" forge_and_altar_on_exit_hook)
+mod:hook_safe(ForgeView, "on_exit", forge_and_altar_on_exit_hook)
+mod:hook_safe(AltarView, "on_exit", forge_and_altar_on_exit_hook)
 
-mod:hook(InventoryItemsUI, "on_enter" function (func, ...)
+mod:hook(InventoryItemsUI, "on_enter", function (func, ...)
 	any_screen_open = true
 	view_tab_changed = true
 
 	return func(...)
 end)
 
-mod:hook(InventoryItemsUI, "on_exit" function(func, ...)
-	func(...)
+mod:hook_safe(InventoryItemsUI, "on_exit", function()
 	any_screen_open = false
 end)
 
-local function focus_window(window)
-	window:focus()
-end
-
 local function trim(s)
-  return s:match'^%s*(.*%S)' or ''
+	return s:match'^%s*(.*%S)' or ''
 end
 
 local function execute_filter(textbox)
@@ -996,10 +984,10 @@ local function clear_filter_button_onclick(button)
 		textbox.text = ""
 		textbox:text_changed()
 	else
-		mod:echo("----------FILTERING AND FAVORITES----------")
-		mod:echo("Hover over an inventory item and press \"r\" to set the item as your favorite! Repeat to undo. Favorites won't show on the scavenge tab of the forge!")
-		mod:echo("Filter by item name, item type or by trait names. Narrow the search with multiple search terms separated with a comma.")
-		mod:echo("----------------------------------------------------------------------")
+		mod:echo_localized("help_message_1")
+		mod:echo_localized("help_message_2")
+		mod:echo_localized("help_message_3")
+		mod:echo_localized("help_message_4")
 
 		open_chat = Managers.state.network:network_time() + 0.1
 	end
@@ -1035,7 +1023,8 @@ mod.create_window = function(self)
 	local border = 5
 	local search_position = {border, border}
 	local search_size = {window_size[1] - 40, size[2]}
-	self.search_textbox = self.filter_window:create_textbox("txt_search", search_position, search_size, text, "Search ...", execute_filter)
+	self.search_textbox = self.filter_window:create_textbox("txt_search", search_position, search_size, nil, text, mod:localize("search_textbox_placeholder"))
+	self.search_textbox:set("on_text_changed", execute_filter)
 	local size_a = simple_ui:adjust_to_fit_scale({window_size[1] - 40, 0})
 	local size_b = simple_ui:adjust_to_fit_scale({window_size[1] - 10, 0})
 	self.search_textbox:set("after_update", function(self)
@@ -1047,13 +1036,15 @@ mod.create_window = function(self)
 	end)
 
 	local clear_position = {window_size[1] - 30, border}
-	local btn_clear_search = self.filter_window:create_button("btn_clear_search", clear_position, size, "?", clear_filter_button_onclick)
+	local btn_clear_search = self.filter_window:create_button("btn_clear_search", clear_position, size, nil, "?")
+	btn_clear_search:set("on_click", clear_filter_button_onclick)
 	if text and #text > 0 then
 		btn_clear_search.text = "X"
 	end
 
 	local favorites = self.filters and table.contains(self.filters, "favs")
-	self.filter_window:create_checkbox("chk_favorites", {border, 35}, {size[1], size[2]}, "Show Favorites", favorites, on_favorites_toggle)
+	local checkbox = self.filter_window:create_checkbox("chk_favorites", {border, 35}, {size[1], size[2]}, nil, mod:localize("checkbox_show_favorites_only"), favorites)
+	checkbox:set("on_value_changed", on_favorites_toggle)
 
 	self.filter_window:init()
 end
@@ -1063,44 +1054,27 @@ mod.reload_window = function(self)
 	self:create_window()
 end
 
-local create_filter_window = function(func, self, ...)
-	func(self, ...)
+local create_filter_window = function()
 	mod:reload_window()
 end
 
-mod:hook(InventoryView, "on_enter" create_filter_window)
-mod:hook(InventoryView, "unsuspend" create_filter_window)
+mod:hook_safe(InventoryView, "on_enter", create_filter_window)
+mod:hook_safe(InventoryView, "unsuspend", create_filter_window)
 
-mod:hook(ForgeView, "unsuspend" create_filter_window)
-mod:hook(AltarView, "unsuspend" create_filter_window)
+mod:hook_safe(ForgeView, "unsuspend", create_filter_window)
+mod:hook_safe(AltarView, "unsuspend", create_filter_window)
 
-mod:hook(InventoryView, "on_exit" function(func, ...)
-	func(...)
+mod:hook_safe(InventoryView, "on_exit", function()
 	mod:destroy_window()
 end)
 
 --- Events ---
---- Settings changes.
-mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
-end
-
 --- Mod suspend.
 mod.on_disabled = function(initial_call) -- luacheck: ignore initial_call
-	mod:disable_all_hooks()
+	mod.favs = {}
 end
 
 --- Mod unsuspend.
 mod.on_enabled = function(initial_call) -- luacheck: ignore initial_call
-	mod:enable_all_hooks()
+	load_favs()
 end
-
---- Callback for the game state changed event.
-mod.on_game_state_changed = function(status, state)
-	if status == "enter" and state == "StateIngame" then
-		mod:init_state()
-		mod:enable_all_hooks() -- this shouldn't be needed but it is
-	end
-end
-
---- Start ---
-mod:deserialize_favs()
