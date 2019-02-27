@@ -5,32 +5,32 @@ local mod = get_mod("CrosshairCustomization")
 Crosshair_mod = Crosshair_mod or {} -- need to store stuff that doesn't get wiped on mod reload
 
 local COLOR_INDEX = {
-    DEFAULT = 1,
-    RED = 2,
-    GREEN = 3,
-    CUSTOM = 4
+	DEFAULT = 1,
+	RED = 2,
+	GREEN = 3,
+	CUSTOM = 4
 }
 
 local ENLARGE = {
-    OFF = 1,
-    SLIGHTLY = 2,
-    HEAVILY = 3
+	OFF = 1,
+	SLIGHTLY = 2,
+	HEAVILY = 3
 }
 
 local SETTING_NAMES = {
-    COLOR = "color",
-    ENLARGE = "enlarge",
-    HEADSHOT_MARKER = "headshot_marker",
-    HEADSHOT_MARKER_COLOR = "headshot_marker_color",
-    DOT = "dot",
-    DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
-    NO_MELEE_DOT = "no_melee_dot",
-    CUSTOM_RED = "custom_red",
-    CUSTOM_GREEN = "custom_green",
-    CUSTOM_BLUE = "custom_blue",
-    HS_CUSTOM_RED = "hs_custom_red",
-    HS_CUSTOM_GREEN = "hs_custom_green",
-    HS_CUSTOM_BLUE = "hs_custom_blue",
+	COLOR = "color",
+	ENLARGE = "enlarge",
+	HEADSHOT_MARKER = "headshot_marker",
+	HEADSHOT_MARKER_COLOR = "headshot_marker_color",
+	DOT = "dot",
+	DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
+	NO_MELEE_DOT = "no_melee_dot",
+	CUSTOM_RED = "custom_red",
+	CUSTOM_GREEN = "custom_green",
+	CUSTOM_BLUE = "custom_blue",
+	HS_CUSTOM_RED = "hs_custom_red",
+	HS_CUSTOM_GREEN = "hs_custom_green",
+	HS_CUSTOM_BLUE = "hs_custom_blue",
 }
 
 local COLORS = {
@@ -215,7 +215,7 @@ mod:hook(CrosshairUI, "update_hit_markers", function (func, self, dt)
 end)
 
 local function change_crosshair_color(crosshair_ui)
-    local color_index = mod:is_enabled() and mod:get(SETTING_NAMES.COLOR) or COLOR_INDEX.DEFAULT
+	local color_index = mod:is_enabled() and mod:get(SETTING_NAMES.COLOR) or COLOR_INDEX.DEFAULT
 	local color = COLORS[color_index] or { 255, mod:get(SETTING_NAMES.CUSTOM_RED), mod:get(SETTING_NAMES.CUSTOM_GREEN), mod:get(SETTING_NAMES.CUSTOM_BLUE) }
 	crosshair_ui.crosshair_dot.style.color = table.clone(color)
 	crosshair_ui.crosshair_up.style.color = table.clone(color)
@@ -232,8 +232,8 @@ local function change_crosshair_color(crosshair_ui)
 
 	if mod.headshot_widgets[1] and not mod.headshot_animations[1] then
 		for i = 1, 4 do
-		    local hs_color_index = mod:is_enabled() and mod:get(SETTING_NAMES.HEADSHOT_MARKER_COLOR) or COLOR_INDEX.DEFAULT
-		    local hs_color = COLORS[hs_color_index] or { 255, mod:get(SETTING_NAMES.HS_CUSTOM_RED), mod:get(SETTING_NAMES.HS_CUSTOM_GREEN), mod:get(SETTING_NAMES.HS_CUSTOM_BLUE) }
+			local hs_color_index = mod:is_enabled() and mod:get(SETTING_NAMES.HEADSHOT_MARKER_COLOR) or COLOR_INDEX.DEFAULT
+			local hs_color = COLORS[hs_color_index] or { 255, mod:get(SETTING_NAMES.HS_CUSTOM_RED), mod:get(SETTING_NAMES.HS_CUSTOM_GREEN), mod:get(SETTING_NAMES.HS_CUSTOM_BLUE) }
 			mod.headshot_widgets[i].style.rotating_texture.color = table.clone(hs_color)
 			mod.headshot_widgets[i].style.rotating_texture.color[1] = 0
 		end
@@ -277,20 +277,20 @@ mod:hook(CrosshairUI, "draw_dot_style_crosshair", function(func, self, ...)
 		self.crosshair_dot.style.color[1] = 0;
 	end
 
-    return func(self, ...)
+	return func(self, ...)
 end)
 
 mod:hook(CrosshairUI, "draw_default_style_crosshair", function(func, self, ...)
 	draw_crosshair_prehook(self)
 
 	if mod:is_enabled() and mod:get(SETTING_NAMES.DOT) then
-        self.crosshair_up.style.color[1] = 0
-        self.crosshair_down.style.color[1] = 0
-        self.crosshair_left.style.color[1] = 0
-        self.crosshair_right.style.color[1] = 0
+		self.crosshair_up.style.color[1] = 0
+		self.crosshair_down.style.color[1] = 0
+		self.crosshair_left.style.color[1] = 0
+		self.crosshair_right.style.color[1] = 0
 	end
 
-    return func(self, ...)
+	return func(self, ...)
 end)
 
 mod:hook(DamageSystem, "rpc_add_damage", function (func, self, sender, victim_unit_go_id, attacker_unit_go_id, attacker_is_level_unit, damage_amount, hit_zone_id, damage_type_id, damage_direction, damage_source_id, ...)
@@ -356,9 +356,9 @@ end
 --- Mod suspend.
 mod.on_disabled = function(initial_call) -- luacheck: ignore initial_call
 	mod:disable_all_hooks()
-    mod:hook_enable("CrosshairUI.update_hit_markers")
-    mod:hook_enable("CrosshairUI.draw_dot_style_crosshair")
-    mod:hook_enable("CrosshairUI.draw_default_style_crosshair")
+	mod:hook_enable("CrosshairUI.update_hit_markers")
+	mod:hook_enable("CrosshairUI.draw_dot_style_crosshair")
+	mod:hook_enable("CrosshairUI.draw_default_style_crosshair")
 end
 
 --- Mod unsuspend.

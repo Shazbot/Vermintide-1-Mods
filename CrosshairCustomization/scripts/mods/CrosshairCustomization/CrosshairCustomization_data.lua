@@ -3,32 +3,32 @@
 local mod = get_mod("CrosshairCustomization")
 
 local COLOR_INDEX = {
-    DEFAULT = 1,
-    RED = 2,
-    GREEN = 3,
-    CUSTOM = 4
+	DEFAULT = 1,
+	RED = 2,
+	GREEN = 3,
+	CUSTOM = 4
 }
 
 local ENLARGE = {
-    OFF = 1,
-    SLIGHTLY = 2,
-    HEAVILY = 3
+	OFF = 1,
+	SLIGHTLY = 2,
+	HEAVILY = 3
 }
 
 local SETTING_NAMES = {
-    COLOR = "color",
-    ENLARGE = "enlarge",
-    HEADSHOT_MARKER = "headshot_marker",
-    HEADSHOT_MARKER_COLOR = "headshot_marker_color",
-    DOT = "dot",
-    DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
-    NO_MELEE_DOT = "no_melee_dot",
-    CUSTOM_RED = "custom_red",
-    CUSTOM_GREEN = "custom_green",
-    CUSTOM_BLUE = "custom_blue",
-    HS_CUSTOM_RED = "hs_custom_red",
-    HS_CUSTOM_GREEN = "hs_custom_green",
-    HS_CUSTOM_BLUE = "hs_custom_blue",
+	COLOR = "color",
+	ENLARGE = "enlarge",
+	HEADSHOT_MARKER = "headshot_marker",
+	HEADSHOT_MARKER_COLOR = "headshot_marker_color",
+	DOT = "dot",
+	DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
+	NO_MELEE_DOT = "no_melee_dot",
+	CUSTOM_RED = "custom_red",
+	CUSTOM_GREEN = "custom_green",
+	CUSTOM_BLUE = "custom_blue",
+	HS_CUSTOM_RED = "hs_custom_red",
+	HS_CUSTOM_GREEN = "hs_custom_green",
+	HS_CUSTOM_BLUE = "hs_custom_blue",
 }
 
 local COLORS = {
@@ -59,10 +59,10 @@ mod_data.options_widgets = {
 				{text = "Red", value = COLOR_INDEX.RED},
 				{text = "Green", value = COLOR_INDEX.GREEN},
 				{text = "Custom", value = COLOR_INDEX.CUSTOM},
-	    },
+		},
 		["default_value"] = COLOR_INDEX.DEFAULT,
 		["sub_widgets"] = {
-		    {
+			{
 				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
 				["setting_name"] = SETTING_NAMES.CUSTOM_RED,
 				["widget_type"] = "numeric",
@@ -110,20 +110,20 @@ mod_data.options_widgets = {
 		["tooltip"] = "Adds a marker to the crosshair on headshots.",
 		["default_value"] = false,
 		["sub_widgets"] = {
-		    {
-			    ["setting_name"] = SETTING_NAMES.HEADSHOT_MARKER_COLOR,
-			    ["widget_type"] = "dropdown",
-			    ["text"] = "Color",
-			    ["tooltip"] =  "Changes the color of the headshot markers.",
-			    ["options"] = {
-				    {text = "Default", value = COLOR_INDEX.DEFAULT},
-				    {text = "Red", value = COLOR_INDEX.RED},
-				    {text = "Green", value = COLOR_INDEX.GREEN},
-				    {text = "Custom", value = COLOR_INDEX.CUSTOM},
-			    },
-			    ["default"] = COLOR_INDEX.DEFAULT,
-			    ["sub_widgets"] = {
-				    {
+			{
+				["setting_name"] = SETTING_NAMES.HEADSHOT_MARKER_COLOR,
+				["widget_type"] = "dropdown",
+				["text"] = "Color",
+				["tooltip"] =  "Changes the color of the headshot markers.",
+				["options"] = {
+					{text = "Default", value = COLOR_INDEX.DEFAULT},
+					{text = "Red", value = COLOR_INDEX.RED},
+					{text = "Green", value = COLOR_INDEX.GREEN},
+					{text = "Custom", value = COLOR_INDEX.CUSTOM},
+				},
+				["default"] = COLOR_INDEX.DEFAULT,
+				["sub_widgets"] = {
+					{
 						["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
 						["setting_name"] = SETTING_NAMES.HS_CUSTOM_RED,
 						["widget_type"] = "numeric",
@@ -151,7 +151,7 @@ mod_data.options_widgets = {
 						["default_value"] = 255,
 					},
 				},
-		    },
+			},
 		},
 	},
 	{
