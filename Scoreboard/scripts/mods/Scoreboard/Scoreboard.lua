@@ -364,10 +364,10 @@ mod:hook(ScoreboardUI, "init", function (func, self, end_of_level_ui_context)
 
 	-- sort using the lookup
 	table.sort(scoreboard_session_data[1],
-	        function(topic1, topic2)
-	            return topics_lookup[topic1.display_text] < topics_lookup[topic2.display_text]
-	        end
-	    )
+			function(topic1, topic2)
+				return topics_lookup[topic1.display_text] < topics_lookup[topic2.display_text]
+			end
+		)
 
 	func(self, end_of_level_ui_context)
 end)
