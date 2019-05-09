@@ -25,7 +25,7 @@ mod_data.options_widgets = {
 		["options"] = {
 			{text = mod:localize("timers_position_top"), value = TIMERS_POSITON_TOP},
 			{text = mod:localize("timers_position_bottom"), value = TIMERS_POSITON_BOTTOM},
-	    },
+		},
 		["default_value"] = TIMERS_POSITON_TOP,
 	},
 }
