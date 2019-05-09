@@ -11,13 +11,13 @@ local mod_data = {
 	allow_rehooking = true,
 }
 
-mod_data.options_widgets = {
-	{
-		["setting_name"] = HOMOGENIZE_PARTY_TRINKET_ICONS,
-		["widget_type"] = "checkbox",
-		["text"] = "Homogenize event icons",
-		["tooltip"] = "Make event trinkets have icon of its closest equivalent.",
-		["default_value"] = true,
+mod_data.options = {
+	widgets = {
+		{
+			setting_id    = HOMOGENIZE_PARTY_TRINKET_ICONS,
+			type          = "checkbox",
+			default_value = true,
+		}
 	}
 }
 

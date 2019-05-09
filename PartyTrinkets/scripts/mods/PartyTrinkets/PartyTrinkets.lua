@@ -145,104 +145,89 @@ local function get_active_trinket_slots(attachment_extn)
 	return active_trinkets
 end
 
-mod:hook(UnitFrameUI, "_create_ui_elements", function(orig_func, self, frame_index)
-	orig_func(self, frame_index)
+mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
 	self._hudmod_is_own_player = not frame_index
 end)
 
-mod:hook(UnitFrameUI, "draw", function(orig_func, self, dt)
+mod:hook_safe(UnitFrameUI, "draw", function(self, dt)
 	local data = self.data
 	if self._is_visible and data._hudmod_active_trinkets then
 		local ui_renderer = self.ui_renderer
 		local input_service = self.input_manager:get_service("ingame_menu")
 		UIRenderer.begin_pass(ui_renderer, self.ui_scenegraph, input_service, dt, nil, self.render_settings)
 
-		if mod:is_enabled() then
-			local widget = self._trinkets_widget
-			if not widget or rawget(_G, "_customhud_defined") and CustomHUD.was_toggled then
-				widget = UIWidget.init(trinkets_widget)
-				self._trinkets_widget = widget
+		local widget = self._trinkets_widget
+		if not widget or rawget(_G, "_customhud_defined") and CustomHUD.was_toggled then
+			widget = UIWidget.init(trinkets_widget)
+			self._trinkets_widget = widget
 
-				if self._hudmod_is_own_player then
-					widget.offset[2] = -85
-					for _, trinket_style in pairs(widget.style) do
-						trinket_style.offset[1] = trinket_style.offset[1] - (rawget(_G, "_customhud_defined") and CustomHUD.enabled and 291 or 295)
-					end
+			if self._hudmod_is_own_player then
+				widget.offset[2] = -85
+				for _, trinket_style in pairs(widget.style) do
+					trinket_style.offset[1] = trinket_style.offset[1] - (rawget(_G, "_customhud_defined") and CustomHUD.enabled and 291 or 295)
 				end
 			end
+		end
 
-			-- show/hide trinket widgets and assign trinket icons
-			local important_trinkets = data._hudmod_active_trinkets or {}
-			for i=1,10 do
-				widget.content["trinket_"..i].show = false
-				if important_trinkets[i] then
-					if i < 6 or important_trinkets[i-5] then
-						widget.content["trinket_"..i].show = true
-						widget.content["trinket_"..i].texture_id = important_trinkets[i].icon
-					elseif i == dupe_position then
-						widget.content["trinket_"..luck_position].show = true
-						widget.content["trinket_"..luck_position].texture_id = important_trinkets[i].icon
-					elseif i == sisterhood_position then
-						widget.content["trinket_"..lichbone_position].show = true
-						widget.content["trinket_"..lichbone_position].texture_id = important_trinkets[i].icon
-					end
+		-- show/hide trinket widgets and assign trinket icons
+		local important_trinkets = data._hudmod_active_trinkets or {}
+		for i=1,10 do
+			widget.content["trinket_"..i].show = false
+			if important_trinkets[i] then
+				if i < 6 or important_trinkets[i-5] then
+					widget.content["trinket_"..i].show = true
+					widget.content["trinket_"..i].texture_id = important_trinkets[i].icon
+				elseif i == dupe_position then
+					widget.content["trinket_"..luck_position].show = true
+					widget.content["trinket_"..luck_position].texture_id = important_trinkets[i].icon
+				elseif i == sisterhood_position then
+					widget.content["trinket_"..lichbone_position].show = true
+					widget.content["trinket_"..lichbone_position].texture_id = important_trinkets[i].icon
 				end
 			end
+		end
 
-			-- dove trinket related stuff
-			widget.content["trinket_"..100].show = not not important_trinkets[100]
-			widget.content["trinket_"..101].show = widget.content["trinket_"..100].show
-			if widget.content["trinket_"..100].show then
-				widget.content["trinket_"..100].texture_id = important_trinkets[100].icon
-				widget.content["trinket_"..101].texture_id = important_trinkets[100].icon
-				if important_trinkets[6] then
-					widget.content["trinket_"..6].show = true
-					widget.content["trinket_"..6].texture_id = important_trinkets[6].icon
-				end
+		-- dove trinket related stuff
+		widget.content["trinket_"..100].show = not not important_trinkets[100]
+		widget.content["trinket_"..101].show = widget.content["trinket_"..100].show
+		if widget.content["trinket_"..100].show then
+			widget.content["trinket_"..100].texture_id = important_trinkets[100].icon
+			widget.content["trinket_"..101].texture_id = important_trinkets[100].icon
+			if important_trinkets[6] then
+				widget.content["trinket_"..6].show = true
+				widget.content["trinket_"..6].texture_id = important_trinkets[6].icon
 			end
+		end
 
-			-- render trinkets widget if player not dead or respawned
-			if not self._customhud_is_dead and not self._customhud_player_unit_missing and not self._customhud_has_respawned then
-				UIRenderer.draw_widget(ui_renderer, widget)
-			end
+		-- render trinkets widget if player not dead or respawned
+		if not self._customhud_is_dead and not self._customhud_player_unit_missing and not self._customhud_has_respawned then
+			UIRenderer.draw_widget(ui_renderer, widget)
 		end
 
 		UIRenderer.end_pass(ui_renderer)
 	end
-
-	return orig_func(self, dt)
 end)
 
 mod:hook(UnitFramesHandler, "update", function(orig_func, self, dt, t, my_player)
 	local player_unit = self.my_player.player_unit
 	if player_unit then
-		if mod:is_enabled() then
-			local unit_frame = self._unit_frames[self._current_frame_index]
-			if unit_frame and unit_frame.sync then
-				local extensions = unit_frame.player_data.extensions
-				if extensions and not extensions.attachment and ScriptUnit.has_extension(unit_frame.player_data.player_unit, "attachment_system") then
-					extensions.attachment = ScriptUnit.extension(unit_frame.player_data.player_unit, "attachment_system")
-				end
-				local attachment_extn = extensions and extensions.attachment
-				local active_trinkets = {}
-				if attachment_extn then
-					active_trinkets = get_active_trinket_slots(attachment_extn)
-				end
-				if unit_frame.data._hudmod_active_trinkets ~= active_trinkets then
-					unit_frame.data._hudmod_active_trinkets = active_trinkets
-					self._dirty = true
-				end
+		local unit_frame = self._unit_frames[self._current_frame_index]
+		if unit_frame and unit_frame.sync then
+			local extensions = unit_frame.player_data.extensions
+			if extensions and not extensions.attachment and ScriptUnit.has_extension(unit_frame.player_data.player_unit, "attachment_system") then
+				extensions.attachment = ScriptUnit.extension(unit_frame.player_data.player_unit, "attachment_system")
+			end
+			local attachment_extn = extensions and extensions.attachment
+			local active_trinkets = {}
+			if attachment_extn then
+				active_trinkets = get_active_trinket_slots(attachment_extn)
+			end
+			if unit_frame.data._hudmod_active_trinkets ~= active_trinkets then
+				unit_frame.data._hudmod_active_trinkets = active_trinkets
+				self._dirty = true
 			end
 		end
 	end
 
 	return orig_func(self, dt, t, my_player)
 end)
-
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
