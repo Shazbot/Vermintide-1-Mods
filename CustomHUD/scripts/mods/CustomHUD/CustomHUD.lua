@@ -9,10 +9,10 @@ CustomHUD.backups = CustomHUD.backups or {}
 CustomHUD.init_flags = CustomHUD.init_flags or {}
 
 local SETTING_NAMES = {
-    CUSTOM_HUD = "custom_hud",
-    COLORIZE_AMMO = "colorize_ammo",
-    COLORIZE_SLOTS = "colorize_party_item_slots",
-    GRAYSCALE = "grayscale_icons",
+	CUSTOM_HUD = "custom_hud",
+	COLORIZE_AMMO = "colorize_ammo",
+	COLORIZE_SLOTS = "colorize_party_item_slots",
+	GRAYSCALE = "grayscale_icons",
 }
 
 -- we'll keep these updated
@@ -734,7 +734,7 @@ UnitFrameUI._customhud_update = function (self, has_respawned, is_dead, is_wound
 			self._other_players_widget.style.custom_character_portrait.color = {40,255,255,255}
 		elseif has_respawned then
 			set_level_and_name_text_color(Colors.get_color_table_with_alpha("cheeseburger", 180))
-            self._other_players_widget.style.custom_character_portrait.color = {180,255,225,255}
+			self._other_players_widget.style.custom_character_portrait.color = {180,255,225,255}
 		elseif is_wounded or out_of_wounds then
 			set_level_and_name_text_color(Colors.color_definitions.white)
 			self._other_players_widget.style.custom_character_portrait.color = {175,255,255,255}
@@ -1493,7 +1493,7 @@ end
 
 --- Mod unsuspend.
 mod.on_enabled = function(initial_call) -- luacheck: ignore initial_call
-    mod:enable_all_hooks()
+	mod:enable_all_hooks()
 end
 
 --- Start. ---

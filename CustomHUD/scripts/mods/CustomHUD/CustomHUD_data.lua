@@ -7,10 +7,10 @@ mod.GAMEPAD = 2
 mod.CUSTOM = 3
 
 local SETTING_NAMES = {
-    CUSTOM_HUD = "custom_hud",
-    COLORIZE_AMMO = "colorize_ammo",
-    COLORIZE_SLOTS = "colorize_party_item_slots",
-    GRAYSCALE = "grayscale_icons",
+	CUSTOM_HUD = "custom_hud",
+	COLORIZE_AMMO = "colorize_ammo",
+	COLORIZE_SLOTS = "colorize_party_item_slots",
+	GRAYSCALE = "grayscale_icons",
 }
 
 local mod_data = {
@@ -21,7 +21,7 @@ local mod_data = {
 }
 
 mod_data.options_widgets = {
-    {
+	{
 		["setting_name"] = SETTING_NAMES.CUSTOM_HUD,
 		["widget_type"] = "dropdown",
 		["text"] = "HUD Preset",
@@ -44,28 +44,28 @@ mod_data.options_widgets = {
 		["default_value"] = mod.CUSTOM,
 		["sub_widgets"] = {
 			{
-			    ["show_widget_condition"] = { mod.CUSTOM },
-			    ["setting_name"] = SETTING_NAMES.COLORIZE_AMMO,
-			    ["widget_type"] = "checkbox",
-			    ["text"] = "Change Ammo Counter Color",
-			    ["tooltip"] = "Changes text color of the ammo counter to red at 0 ammo.",
-			    ["default_value"] = false,
+				["show_widget_condition"] = { mod.CUSTOM },
+				["setting_name"] = SETTING_NAMES.COLORIZE_AMMO,
+				["widget_type"] = "checkbox",
+				["text"] = "Change Ammo Counter Color",
+				["tooltip"] = "Changes text color of the ammo counter to red at 0 ammo.",
+				["default_value"] = false,
 			},
 			{
-			    ["show_widget_condition"] = { mod.CUSTOM },
-			    ["setting_name"] = SETTING_NAMES.COLORIZE_SLOTS,
-			    ["widget_type"] = "checkbox",
-			    ["text"] = "Highlight Party Slots",
-			    ["tooltip"] = "Highlight item slots of players with effect sharing trinkets when you have a shareable item.",
-			    ["default_value"] = false,
+				["show_widget_condition"] = { mod.CUSTOM },
+				["setting_name"] = SETTING_NAMES.COLORIZE_SLOTS,
+				["widget_type"] = "checkbox",
+				["text"] = "Highlight Party Slots",
+				["tooltip"] = "Highlight item slots of players with effect sharing trinkets when you have a shareable item.",
+				["default_value"] = false,
 			},
 			{
-			    ["show_widget_condition"] = { mod.CUSTOM },
-			    ["setting_name"] = SETTING_NAMES.GRAYSCALE,
-			    ["widget_type"] = "checkbox",
-			    ["text"] = "Use Grayscale Icons",
-			    ["tooltip"] = "Will use the grayscale version icons for consumables.",
-			    ["default_value"] = false,
+				["show_widget_condition"] = { mod.CUSTOM },
+				["setting_name"] = SETTING_NAMES.GRAYSCALE,
+				["widget_type"] = "checkbox",
+				["text"] = "Use Grayscale Icons",
+				["tooltip"] = "Will use the grayscale version icons for consumables.",
+				["default_value"] = false,
 			},
 		},
 	},
