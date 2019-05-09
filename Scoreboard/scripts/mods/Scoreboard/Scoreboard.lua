@@ -443,11 +443,3 @@ mod:hook(GenericUnitDamageExtension, "add_damage", function (func, self, attacke
 
 	StatisticsUtil.register_damage = original_register_damage
 end)
-
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
