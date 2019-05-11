@@ -592,3 +592,8 @@ end)
 -- because the infinite ammo can proc again after it expires the first time while the speedup
 -- buff is still active, even though the speedup buff itself is not refreshed.  I suspect
 -- this is unintended, but until it's fixed we should just show what we see.
+
+-- ####################################################################################################################
+-- ##### Start ########################################################################################################
+-- ####################################################################################################################
+setup_speedup_indicator()

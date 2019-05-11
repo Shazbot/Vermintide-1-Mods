@@ -16,18 +16,18 @@ local mod_data = {
 	allow_rehooking = true,
 }
 
-mod_data.options_widgets = {
-	{
-		["setting_name"] = SETTING_TIMERS_POSITION,
-		["widget_type"] = "dropdown",
-		["text"] = mod:localize("timers_position_text"),
-		["tooltip"] = mod:localize("timers_position_tooltip"),
-		["options"] = {
-			{text = mod:localize("timers_position_top"), value = TIMERS_POSITON_TOP},
-			{text = mod:localize("timers_position_bottom"), value = TIMERS_POSITON_BOTTOM},
+mod_data.options ={
+	widgets = {
+		{
+			setting_id    = SETTING_TIMERS_POSITION,
+			type          = "dropdown",
+			default_value = TIMERS_POSITON_TOP,
+			options = {
+				{text = "timers_position_top",    value = TIMERS_POSITON_TOP},
+				{text = "timers_position_bottom", value = TIMERS_POSITON_BOTTOM},
+			},
 		},
-		["default_value"] = TIMERS_POSITON_TOP,
-	},
+	}
 }
 
 return mod_data
