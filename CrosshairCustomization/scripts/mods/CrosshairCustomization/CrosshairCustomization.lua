@@ -2,35 +2,36 @@
 
 local mod = get_mod("CrosshairCustomization")
 
-Crosshair_mod = Crosshair_mod or {} -- need to store stuff that doesn't get wiped on mod reload
+-- need to store stuff that doesn't get wiped on mod reload
+local persistent_data = mod:persistent_table("persistent_data")
 
 local COLOR_INDEX = {
-    DEFAULT = 1,
-    RED = 2,
-    GREEN = 3,
-    CUSTOM = 4
+	DEFAULT = 1,
+	RED = 2,
+	GREEN = 3,
+	CUSTOM = 4
 }
 
 local ENLARGE = {
-    OFF = 1,
-    SLIGHTLY = 2,
-    HEAVILY = 3
+	OFF = 1,
+	SLIGHTLY = 2,
+	HEAVILY = 3
 }
 
 local SETTING_NAMES = {
-    COLOR = "color",
-    ENLARGE = "enlarge",
-    HEADSHOT_MARKER = "headshot_marker",
-    HEADSHOT_MARKER_COLOR = "headshot_marker_color",
-    DOT = "dot",
-    DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
-    NO_MELEE_DOT = "no_melee_dot",
-    CUSTOM_RED = "custom_red",
-    CUSTOM_GREEN = "custom_green",
-    CUSTOM_BLUE = "custom_blue",
-    HS_CUSTOM_RED = "hs_custom_red",
-    HS_CUSTOM_GREEN = "hs_custom_green",
-    HS_CUSTOM_BLUE = "hs_custom_blue",
+	COLOR = "color",
+	ENLARGE = "enlarge",
+	HEADSHOT_MARKER = "headshot_marker",
+	HEADSHOT_MARKER_COLOR = "headshot_marker_color",
+	DOT = "dot",
+	DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
+	NO_MELEE_DOT = "no_melee_dot",
+	CUSTOM_RED = "custom_red",
+	CUSTOM_GREEN = "custom_green",
+	CUSTOM_BLUE = "custom_blue",
+	HS_CUSTOM_RED = "hs_custom_red",
+	HS_CUSTOM_GREEN = "hs_custom_green",
+	HS_CUSTOM_BLUE = "hs_custom_blue",
 }
 
 local COLORS = {
@@ -157,8 +158,8 @@ local widget_definitions = {
 }
 
 local function populate_defaults(crosshair_ui)
-	if not Crosshair_mod.default_sizes then
-		Crosshair_mod.default_sizes = {
+	if not persistent_data.default_sizes then
+		persistent_data.default_sizes = {
 			crosshair_dot = table.clone(crosshair_ui.ui_scenegraph.crosshair_dot.size),
 			crosshair_up = table.clone(crosshair_ui.ui_scenegraph.crosshair_up.size),
 			crosshair_down = table.clone(crosshair_ui.ui_scenegraph.crosshair_down.size),
@@ -168,9 +169,7 @@ local function populate_defaults(crosshair_ui)
 	end
 end
 
-mod:hook(CrosshairUI, "draw", function (func, self, dt)
-	func(self, dt)
-
+mod:hook_safe(CrosshairUI, "draw", function (self, dt)
 	local ui_renderer = self.ui_renderer
 	local ui_scenegraph = self.ui_scenegraph
 	local input_service = self.input_manager:get_service("ingame_menu")
@@ -182,9 +181,7 @@ mod:hook(CrosshairUI, "draw", function (func, self, dt)
 	UIRenderer.end_pass(ui_renderer)
 end)
 
-mod:hook(CrosshairUI, "update_hit_markers", function (func, self, dt)
-	func(self, dt)
-
+mod:hook_safe(CrosshairUI, "update_hit_markers", function (self, dt)
 	if not mod.headshot_widgets[1] then
 		for i=1,4 do
 			mod.headshot_widgets[i] = UIWidget.init(widget_definitions["crosshair_hit_"..i])
@@ -215,7 +212,7 @@ mod:hook(CrosshairUI, "update_hit_markers", function (func, self, dt)
 end)
 
 local function change_crosshair_color(crosshair_ui)
-    local color_index = mod:is_enabled() and mod:get(SETTING_NAMES.COLOR) or COLOR_INDEX.DEFAULT
+	local color_index = mod:is_enabled() and mod:get(SETTING_NAMES.COLOR) or COLOR_INDEX.DEFAULT
 	local color = COLORS[color_index] or { 255, mod:get(SETTING_NAMES.CUSTOM_RED), mod:get(SETTING_NAMES.CUSTOM_GREEN), mod:get(SETTING_NAMES.CUSTOM_BLUE) }
 	crosshair_ui.crosshair_dot.style.color = table.clone(color)
 	crosshair_ui.crosshair_up.style.color = table.clone(color)
@@ -232,8 +229,8 @@ local function change_crosshair_color(crosshair_ui)
 
 	if mod.headshot_widgets[1] and not mod.headshot_animations[1] then
 		for i = 1, 4 do
-		    local hs_color_index = mod:is_enabled() and mod:get(SETTING_NAMES.HEADSHOT_MARKER_COLOR) or COLOR_INDEX.DEFAULT
-		    local hs_color = COLORS[hs_color_index] or { 255, mod:get(SETTING_NAMES.HS_CUSTOM_RED), mod:get(SETTING_NAMES.HS_CUSTOM_GREEN), mod:get(SETTING_NAMES.HS_CUSTOM_BLUE) }
+			local hs_color_index = mod:is_enabled() and mod:get(SETTING_NAMES.HEADSHOT_MARKER_COLOR) or COLOR_INDEX.DEFAULT
+			local hs_color = COLORS[hs_color_index] or { 255, mod:get(SETTING_NAMES.HS_CUSTOM_RED), mod:get(SETTING_NAMES.HS_CUSTOM_GREEN), mod:get(SETTING_NAMES.HS_CUSTOM_BLUE) }
 			mod.headshot_widgets[i].style.rotating_texture.color = table.clone(hs_color)
 			mod.headshot_widgets[i].style.rotating_texture.color[1] = 0
 		end
@@ -253,13 +250,13 @@ local function change_crosshair_scale(crosshair_ui)
 		crosshair_lines_scale = 1.5
 	end
 
-	for crosshair_part, crosshair_part_size_default in pairs(Crosshair_mod.default_sizes) do
+	for crosshair_part, crosshair_part_size_default in pairs(persistent_data.default_sizes) do
 		for i, default_size in ipairs(crosshair_part_size_default) do
 		  crosshair_ui.ui_scenegraph[crosshair_part].size[i] = default_size * crosshair_lines_scale
 		end
 	end
 
-	for i, default_size in ipairs(Crosshair_mod.default_sizes.crosshair_dot) do
+	for i, default_size in ipairs(persistent_data.default_sizes.crosshair_dot) do
 		crosshair_ui.ui_scenegraph.crosshair_dot.size[i] = default_size * crosshair_dot_scale
 	end
 end
@@ -277,25 +274,23 @@ mod:hook(CrosshairUI, "draw_dot_style_crosshair", function(func, self, ...)
 		self.crosshair_dot.style.color[1] = 0;
 	end
 
-    return func(self, ...)
+	return func(self, ...)
 end)
 
 mod:hook(CrosshairUI, "draw_default_style_crosshair", function(func, self, ...)
 	draw_crosshair_prehook(self)
 
 	if mod:is_enabled() and mod:get(SETTING_NAMES.DOT) then
-        self.crosshair_up.style.color[1] = 0
-        self.crosshair_down.style.color[1] = 0
-        self.crosshair_left.style.color[1] = 0
-        self.crosshair_right.style.color[1] = 0
+		self.crosshair_up.style.color[1] = 0
+		self.crosshair_down.style.color[1] = 0
+		self.crosshair_left.style.color[1] = 0
+		self.crosshair_right.style.color[1] = 0
 	end
 
-    return func(self, ...)
+	return func(self, ...)
 end)
 
-mod:hook(DamageSystem, "rpc_add_damage", function (func, self, sender, victim_unit_go_id, attacker_unit_go_id, attacker_is_level_unit, damage_amount, hit_zone_id, damage_type_id, damage_direction, damage_source_id, ...)
-	func(self, sender, victim_unit_go_id, attacker_unit_go_id, attacker_is_level_unit, damage_amount, hit_zone_id, damage_type_id, damage_direction, damage_source_id, ...)
-
+mod:hook_safe(DamageSystem, "rpc_add_damage", function (self, sender, victim_unit_go_id, attacker_unit_go_id, attacker_is_level_unit, damage_amount, hit_zone_id, damage_type_id, damage_direction, damage_source_id)
 	if not mod:get(SETTING_NAMES.HEADSHOT_MARKER) then
 		return
 	end
@@ -329,9 +324,7 @@ mod:hook(DamageSystem, "rpc_add_damage", function (func, self, sender, victim_un
 	end
 end)
 
-mod:hook(GenericUnitDamageExtension, "add_damage", function (func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, damage_direction, damage_source_name, ...)
-	func(self, attacker_unit, damage_amount, hit_zone_name, damage_type, damage_direction, damage_source_name, ...)
-
+mod:hook_safe(GenericUnitDamageExtension, "add_damage", function (self, attacker_unit, damage_amount, hit_zone_name, damage_type, damage_direction, damage_source_name)
 	if not mod:get(SETTING_NAMES.HEADSHOT_MARKER) then
 		return
 	end
@@ -349,26 +342,16 @@ mod:hook(GenericUnitDamageExtension, "add_damage", function (func, self, attacke
 end)
 
 --- Events. ---
---- Settings changes.
-mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
-end
-
 --- Mod suspend.
 mod.on_disabled = function(initial_call) -- luacheck: ignore initial_call
-	mod:disable_all_hooks()
-    mod:hook_enable("CrosshairUI.update_hit_markers")
-    mod:hook_enable("CrosshairUI.draw_dot_style_crosshair")
-    mod:hook_enable("CrosshairUI.draw_default_style_crosshair")
-end
-
---- Mod unsuspend.
-mod.on_enabled = function(initial_call) -- luacheck: ignore initial_call
-	mod:enable_all_hooks()
+	mod:hook_enable(CrosshairUI, "update_hit_markers")
+	mod:hook_enable(CrosshairUI, "draw_dot_style_crosshair")
+	mod:hook_enable(CrosshairUI, "draw_default_style_crosshair")
 end
 
 --- Actions. ---
 --- Dot only on_toggle.
 mod.dot_toggle = function()
 	local current_dot_only = mod:get(SETTING_NAMES.DOT)
-	mod:set(SETTING_NAMES.DOT, not current_dot_only, true)
+	mod:set(SETTING_NAMES.DOT, not current_dot_only)
 end

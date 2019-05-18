@@ -2,10 +2,10 @@ local localization = {
 	mod_description = {
 		en = "Shows a timer when a potion or attack speed proc is active."
 	},
-	timers_position_text = {
+	timers_position = {
 		en = "Timers Position"
 	},
-	timers_position_tooltip = {
+	timers_position_description = {
 		en = "Choose whether the timers appear at the top or bottom of your screen."
 	},
 	timers_position_top = {

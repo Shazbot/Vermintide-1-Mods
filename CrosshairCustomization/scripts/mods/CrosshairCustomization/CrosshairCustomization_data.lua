@@ -3,32 +3,32 @@
 local mod = get_mod("CrosshairCustomization")
 
 local COLOR_INDEX = {
-    DEFAULT = 1,
-    RED = 2,
-    GREEN = 3,
-    CUSTOM = 4
+	DEFAULT = 1,
+	RED = 2,
+	GREEN = 3,
+	CUSTOM = 4
 }
 
 local ENLARGE = {
-    OFF = 1,
-    SLIGHTLY = 2,
-    HEAVILY = 3
+	OFF = 1,
+	SLIGHTLY = 2,
+	HEAVILY = 3
 }
 
 local SETTING_NAMES = {
-    COLOR = "color",
-    ENLARGE = "enlarge",
-    HEADSHOT_MARKER = "headshot_marker",
-    HEADSHOT_MARKER_COLOR = "headshot_marker_color",
-    DOT = "dot",
-    DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
-    NO_MELEE_DOT = "no_melee_dot",
-    CUSTOM_RED = "custom_red",
-    CUSTOM_GREEN = "custom_green",
-    CUSTOM_BLUE = "custom_blue",
-    HS_CUSTOM_RED = "hs_custom_red",
-    HS_CUSTOM_GREEN = "hs_custom_green",
-    HS_CUSTOM_BLUE = "hs_custom_blue",
+	COLOR = "color",
+	ENLARGE = "enlarge",
+	HEADSHOT_MARKER = "headshot_marker",
+	HEADSHOT_MARKER_COLOR = "headshot_marker_color",
+	DOT = "dot",
+	DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
+	NO_MELEE_DOT = "no_melee_dot",
+	CUSTOM_RED = "custom_red",
+	CUSTOM_GREEN = "custom_green",
+	CUSTOM_BLUE = "custom_blue",
+	HS_CUSTOM_RED = "hs_custom_red",
+	HS_CUSTOM_GREEN = "hs_custom_green",
+	HS_CUSTOM_BLUE = "hs_custom_blue",
 }
 
 local COLORS = {
@@ -47,135 +47,119 @@ local mod_data = {
 	allow_rehooking = true,
 }
 
-mod_data.options_widgets = {
-   {
-		["setting_name"] = SETTING_NAMES.COLOR,
-		["widget_type"] = "dropdown",
-		["text"] = "Color",
-		["tooltip"] = "Color",
-			 "Changes the color of your crosshair.",
-		["options"] = {
-				{text = "Default", value = COLOR_INDEX.DEFAULT},
-				{text = "Red", value = COLOR_INDEX.RED},
-				{text = "Green", value = COLOR_INDEX.GREEN},
-				{text = "Custom", value = COLOR_INDEX.CUSTOM},
-	    },
-		["default_value"] = COLOR_INDEX.DEFAULT,
-		["sub_widgets"] = {
-		    {
-				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-				["setting_name"] = SETTING_NAMES.CUSTOM_RED,
-				["widget_type"] = "numeric",
-				["text"] = "Red",
-				["tooltip"] = "Changes the red color value of your crosshair.",
-				["range"] = {0, 255},
-				["default_value"] = 255,
+mod_data.options = {
+	widgets = {
+		{
+			setting_id    = SETTING_NAMES.COLOR,
+			type          = "dropdown",
+			default_value = COLOR_INDEX.DEFAULT,
+			options = {
+				{text = "default", value = COLOR_INDEX.DEFAULT},
+				{text = "red",     value = COLOR_INDEX.RED},
+				{text = "green",   value = COLOR_INDEX.GREEN},
+				{text = "custom",  value = COLOR_INDEX.CUSTOM, show_widgets = {1, 2, 3}},
 			},
-			{
-				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-				["setting_name"] = SETTING_NAMES.CUSTOM_GREEN,
-				["widget_type"] = "numeric",
-				["text"] = "Green",
-				["tooltip"] = "Changes the green color value of your crosshair.",
-				["range"] = {0, 255},
-				["default_value"] = 255,
-			},
-			{
-				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-				["setting_name"] = SETTING_NAMES.CUSTOM_BLUE,
-				["widget_type"] = "numeric",
-				["text"] = "Blue",
-				["tooltip"] = "Changes the blue color value of your crosshair.",
-				["range"] = {0, 255},
-				["default_value"] = 255,
+			sub_widgets = {
+				{
+					setting_id    = SETTING_NAMES.CUSTOM_RED,
+					type          = "numeric",
+					title         = "red",
+					tooltip       = "red_description",
+					default_value = 255,
+					range         = {0, 255},
+				},
+				{
+					setting_id    = SETTING_NAMES.CUSTOM_GREEN,
+					type          = "numeric",
+					title         = "green",
+					tooltip       = "green_description",
+					default_value = 255,
+					range         = {0, 255},
+				},
+				{
+					setting_id    = SETTING_NAMES.CUSTOM_BLUE,
+					type          = "numeric",
+					title         = "blue",
+					tooltip       = "blue_description",
+					default_value = 255,
+					range         = {0, 255},
+				},
 			},
 		},
-	},
-	{
-		["setting_name"] = SETTING_NAMES.ENLARGE,
-		["widget_type"] = "dropdown",
-		["text"] = "Enlarge",
-		["tooltip"] = "Increases the size of your crosshair.",
-		["options"] = {
-				{text = "Off", value = ENLARGE.OFF},
-				{text = "Slightly", value = ENLARGE.SLIGHTLY},
-				{text = "Heavily", value = ENLARGE.HEAVILY},
+		{
+			setting_id    = SETTING_NAMES.ENLARGE,
+			type          = "dropdown",
+			default_value = ENLARGE.OFF,
+			options = {
+				{text = "off",      value = ENLARGE.OFF},
+				{text = "slightly", value = ENLARGE.SLIGHTLY},
+				{text = "heavily",  value = ENLARGE.HEAVILY},
+			},
 		},
-		["default_value"] = ENLARGE.OFF,
-	},
-	{
-		["setting_name"] = SETTING_NAMES.HEADSHOT_MARKER,
-		["widget_type"] = "checkbox",
-		["text"] = "Headshot indicator",
-		["tooltip"] = "Adds a marker to the crosshair on headshots.",
-		["default_value"] = false,
-		["sub_widgets"] = {
-		    {
-			    ["setting_name"] = SETTING_NAMES.HEADSHOT_MARKER_COLOR,
-			    ["widget_type"] = "dropdown",
-			    ["text"] = "Color",
-			    ["tooltip"] =  "Changes the color of the headshot markers.",
-			    ["options"] = {
-				    {text = "Default", value = COLOR_INDEX.DEFAULT},
-				    {text = "Red", value = COLOR_INDEX.RED},
-				    {text = "Green", value = COLOR_INDEX.GREEN},
-				    {text = "Custom", value = COLOR_INDEX.CUSTOM},
-			    },
-			    ["default"] = COLOR_INDEX.DEFAULT,
-			    ["sub_widgets"] = {
-				    {
-						["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-						["setting_name"] = SETTING_NAMES.HS_CUSTOM_RED,
-						["widget_type"] = "numeric",
-						["text"] = "Red",
-						["tooltip"] = "Changes the red color value of your crosshair.",
-						["range"] = {0, 255},
-						["default_value"] = 255,
+		{
+			setting_id    = SETTING_NAMES.HEADSHOT_MARKER,
+			type          = "checkbox",
+			default_value = false,
+			sub_widgets = {
+				{
+					setting_id    = SETTING_NAMES.HEADSHOT_MARKER_COLOR,
+					type          = "dropdown",
+					title         = "color",
+					default_value = COLOR_INDEX.DEFAULT,
+					options = {
+						{text = "default", value = COLOR_INDEX.DEFAULT},
+						{text = "red",     value = COLOR_INDEX.RED},
+						{text = "green",   value = COLOR_INDEX.GREEN},
+						{text = "custom",  value = COLOR_INDEX.CUSTOM, show_widgets = {1, 2, 3}},
 					},
-					{
-						["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-						["setting_name"] = SETTING_NAMES.HS_CUSTOM_GREEN,
-						["widget_type"] = "numeric",
-						["text"] = "Green",
-						["tooltip"] = "Changes the green color value of your crosshair.",
-						["range"] = {0, 255},
-						["default_value"] = 255,
-					},
-					{
-						["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-						["setting_name"] = SETTING_NAMES.HS_CUSTOM_BLUE,
-						["widget_type"] = "numeric",
-						["text"] = "Blue",
-						["tooltip"] = "Changes the blue color value of your crosshair.",
-						["range"] = {0, 255},
-						["default_value"] = 255,
+					sub_widgets = {
+						{
+							setting_id    = SETTING_NAMES.HS_CUSTOM_RED,
+							type          = "numeric",
+							title         = "red",
+							tooltip       = "red_description",
+							default_value = 255,
+							range         = {0, 255},
+						},
+						{
+							setting_id    = SETTING_NAMES.HS_CUSTOM_GREEN,
+							type          = "numeric",
+							title         = "green",
+							tooltip       = "green_description",
+							default_value = 255,
+							range         = {0, 255},
+						},
+						{
+							setting_id    = SETTING_NAMES.HS_CUSTOM_BLUE,
+							type          = "numeric",
+							title         = "blue",
+							tooltip       = "blue_description",
+							default_value = 255,
+							range         = {0, 255},
+						},
 					},
 				},
-		    },
+			},
 		},
-	},
-	{
-		["setting_name"] = SETTING_NAMES.DOT,
-		["widget_type"] = "checkbox",
-		text = "Dot Only",
-		tooltip = "Forces the crosshair to remain as only a dot, even with ranged weapons.",
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = SETTING_NAMES.DOT_TOGGLE_HOTKEY,
-		["widget_type"] = "keybind",
-		["text"] = "Dot Only Toggle Hotkey",
-		["tooltip"] = "Use a hotkey to toggle dot only mode on/off.",
-		["default_value"] = {},
-		["action"] = "dot_toggle"
-	},
-	{
-		["setting_name"] = SETTING_NAMES.NO_MELEE_DOT,
-		["widget_type"] = "checkbox",
-		["text"] = "No Melee Crosshair",
-		["tooltip"] = "Disables the dot crosshair when you have your melee equipped.",
-		["default_value"] = false
-	},
+		{
+			setting_id    = SETTING_NAMES.DOT,
+			type          = "checkbox",
+			default_value = false,
+		},
+		{
+			setting_id      = SETTING_NAMES.DOT_TOGGLE_HOTKEY,
+			type            = "keybind",
+			default_value   = {},
+			keybind_trigger = "pressed",
+			keybind_type    = "function_call",
+			function_name   = "dot_toggle"
+		},
+		{
+			setting_id    = SETTING_NAMES.NO_MELEE_DOT,
+			type          = "checkbox",
+			default_value = false
+		},
+	}
 }
 
 return mod_data

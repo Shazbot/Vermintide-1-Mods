@@ -1,11 +1,11 @@
 return {
 	mod_description = {
-		en = "Pause the game."
+		en = "Allows you to pause the game with the chat command or with a keybind."
 	},
 	hotkey = {
 		en = "Hotkey"
 	},
-	hotkey_tooltip = {
+	hotkey_description = {
 		en = "Hotkey to pause."
 	},
 	pause_command_description = {

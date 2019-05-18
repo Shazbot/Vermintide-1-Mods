@@ -9,6 +9,4 @@ local mod_data = {
 	allow_rehooking = true,
 }
 
-mod_data.options_widgets = {}
-
 return mod_data

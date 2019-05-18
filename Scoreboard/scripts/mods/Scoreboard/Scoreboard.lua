@@ -364,10 +364,10 @@ mod:hook(ScoreboardUI, "init", function (func, self, end_of_level_ui_context)
 
 	-- sort using the lookup
 	table.sort(scoreboard_session_data[1],
-	        function(topic1, topic2)
-	            return topics_lookup[topic1.display_text] < topics_lookup[topic2.display_text]
-	        end
-	    )
+			function(topic1, topic2)
+				return topics_lookup[topic1.display_text] < topics_lookup[topic2.display_text]
+			end
+		)
 
 	func(self, end_of_level_ui_context)
 end)
@@ -443,11 +443,3 @@ mod:hook(GenericUnitDamageExtension, "add_damage", function (func, self, attacke
 
 	StatisticsUtil.register_damage = original_register_damage
 end)
-
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end

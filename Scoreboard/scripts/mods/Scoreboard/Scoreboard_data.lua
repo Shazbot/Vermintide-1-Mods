@@ -15,43 +15,34 @@ local mod_data = {
 	allow_rehooking = true,
 }
 
-mod_data.options_widgets = {
-	{
-		["setting_name"] = SCOREBOARD_FIXED_ORDER,
-		["widget_type"] = "checkbox",
-		["text"] = "Consistent Topic Order",
-		["tooltip"] = "Make scoreboard topics always be presented in the same order.",
-		["default_value"] = true,
-	},
-	{
-		["setting_name"] = DAMAGE_TAKEN,
-		["widget_type"] = "checkbox",
-		["text"] = "Damage Taken Scoreboard Fix",
-		["tooltip"] = "Ignore damage taken while already downed for the purpose of the end match scoreboard.",
-		["default_value"] = true,
-	},
-	{
-		["setting_name"] = DAMAGE_FF,
-		["widget_type"] = "checkbox",
-		["text"] = "Friendly fire on scoreboard",
-		["tooltip"] = "Display friendly fire tab on the scoreboard.",
-		["default_value"] = true,
-	},
-	{
-		["setting_name"] = FF_SELF,
-		["widget_type"] = "checkbox",
-		["text"] = "Self-inflicted friendly fire on scoreboard",
-		["tooltip"] = "Display self-inficted friendly fire tab on the scoreboard.",
-		["default_value"] = true,
-	},
-	{
-		["setting_name"] = PLAYER_PROCS,
-		["widget_type"] = "checkbox",
-		["text"] = "Heal And Scavenger Procs On Scoreboard",
-		["tooltip"] = "Displays the amount of health and ammo gained from procs.\n" ..
-			"Columns: From Melee Slot, From Ranged Slot, Total Score.",
-		["default_value"] = true,
-	},
+mod_data.options = {
+	widgets = {
+		{
+			setting_id    = SCOREBOARD_FIXED_ORDER,
+			type          = "checkbox",
+			default_value = true,
+		},
+		{
+			setting_id    = DAMAGE_TAKEN,
+			type          = "checkbox",
+			default_value = true,
+		},
+		{
+			setting_id    = DAMAGE_FF,
+			type          = "checkbox",
+			default_value = true,
+		},
+		{
+			setting_id    = FF_SELF,
+			type          = "checkbox",
+			default_value = true,
+		},
+		{
+			setting_id    = PLAYER_PROCS,
+			type          = "checkbox",
+			default_value = true,
+		},
+	}
 }
 
 return mod_data
